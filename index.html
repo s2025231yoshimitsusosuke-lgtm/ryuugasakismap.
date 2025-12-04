@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>龍ケ崎市 飲食店マップ</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+:root {
+  --card-bg: #fff;
+  --accent: #0078ff;
+  --muted: #666;
+}
+body {
+  margin: 0;
+  font-family: "Noto Sans JP", system-ui, sans-serif;
+  background: #f2f4f7;
+}
+#map {
+  height: 100vh;
+  width: 100%;
+}
+header.appbar {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--card-bg);
+  box-shadow: 0 6px 20px rgba(8, 22, 48, 0.12);
+}
+header h1 {
+  margin: 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+input[type="text"], select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+button#locateBtn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button#locateBtn:active {
+  transform: translateY(1px);
+}
+.popup-img {
+  width: 240px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto 6px;
+}
+@media(max-width:600px) {
+  header.appbar {
+    left: 8px; right: 8px; top: 8px; padding: 8px;
+  }
+  .popup-img { width: 180px; height: 110px; }
+  input[type="text"], select { width: 100%; }
+  .controls { flex-direction: column; align-items: stretch; gap: 6px; width: 100%; }
+}
+.marker-div {
+  width: 28px; height: 28px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 14px; border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+.star-badge {
+  position: relative;
+  left: 8px; top: -8px;
+  display: inline-block;
+  background: rgba(255,212,59,0.95);
+  padding: 2px 4px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+</style>
+</head>
+
+<body>
+<header class="appbar">
+  <div class="top-row" style="gap:12px; align-items:center;">
+    <h1>🍜 龍ケ崎市 飲食店マップ（完全版）</h1>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button id="locateBtn">📍 現在地</button>
+    </div>
+  </div>
+  <div class="controls" style="margin-top:6px; width:100%;">
+    <select id="categoryFilter">
+      <option value="all">すべて</option>
+      <option value="favorite">⭐️ お気に入り</option> <option value="ラーメン">ラーメン</option>
+      <option value="カフェ">カフェ</option>
+      <option value="寿司">寿司</option>
+      <option value="焼肉">焼肉</option>
+      <option value="中華">中華</option>
+      <option value="居酒屋">居酒屋</option>
+      <option value="スイーツ">スイーツ</option>
+      <option value="その他">その他</option>
+    </select>
+    <input type="text" id="searchBox" placeholder="店名で検索（例：ラーメン）">
+  </div>
+</header>
+
+<div id="map"></div>
+
+<script>
+// ====== カテゴリ色 ======
+function categoryColor(cat){
+  switch(cat){
+    case "ラーメン": return "#e63946";
+    case "カフェ": return "#2a9d8f";
+    case "寿司": return "#0077b6";
+    case "焼肉": return "#d6336c";
+    case "中華": return "#f4a261";
+    case "居酒屋": return "#6f42c1";
+    case "スイーツ": return "#e76f51";
+    default: return "#4a5568"; // その他
+  }
+}
+
+// ====== 店舗データ (idを永続化キーとして追加) ======
+const initialPlaces = [
+  { id: 1, name: "カフェ風の森", cat: "カフェ", lat: 35.9050, lng: 140.1850, img: "https://placehold.co/480x320?text=Cafe+2", info: "静かな雰囲気のカフェ。10:00-19:00" },
+  { id: 2, name: "山水閣", cat: "ウナギ、しゃぶしゃぶ", lat: 35.949219, lng: 140.1366538, img: "https://b081800.gorp.jp/", info: "予約可、11:00 - 14:00　17:00 - 20:00" },
+  { id: 3, name: "タイガーパンチ", cat: "そば", lat: 35.9129595, lng: 140.1904063, img: "https://x.com/tigerpunch_2024", info: "火曜定休日、カード・電子マネー・QRコード不可" },
+  { id: 4, name: "池田屋", cat: "そば、うどん", lat: 35.9082809, lng: 140.1746611, img: "https://tblg.k-img.com/restaurant/images/Rvw/133058/150x150_square_133058348.jpg", info: "1000円前後、定休日：水曜日、現金のみ、予約可" },
+  { id: 5, name: "焼肉　幸屋", cat: "焼肉", lat: 35.9329486, lng: 140.1357874, img: "https://www.facebook.com/nikuyashikii/", info: "3000円～5000円、定休日：月曜日、カード不可、予約可" },
+  { id: 6, name: "手打ちそば薬師寺", cat: "そば", lat: 35.9075281, lng: 140.1812618, img: "", info: "定休日：日曜日、現金のみ、予約不可" },
+  { id: 7, name: "清六屋", cat: "ラーメン", lat: 35.9116106, lng: 140.1823263, img: "https://www.seirock-ya.jp/", info: "11:00~23:30、予約不可" },
+  { id: 8, name: "はま寿司", cat: "その他", lat: 35.9110378, lng: 140.180523, img: "https://www.hama-sushi.co.jp/", info: "月～金 11:00～24:00　土日祝 10:00～24:00、予約可" },
+  { id: 9, name: "麺や　こもん", cat: "ラーメン", lat: 35.9116106, lng: 140.1823263, img: "https://ameblo.jp/komon0928", info: "11:00~14:00  17:00~20:30、予約不可" }
+];
+
+// **お気に入り状態の永続化ロジック**
+const FAVORITES_STORAGE_KEY = 'ryugasaki_favorites';
+
+function loadFavorites() {
+    try {
+        const favs = localStorage.getItem(FAVORITES_STORAGE_KEY);
+        return favs ? JSON.parse(favs) : {};
+    } catch (e) {
+        console.error("Failed to load favorites from localStorage:", e);
+        return {};
+    }
+}
+
+function saveFavorites(favs) {
+    try {
+        localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favs));
+    } catch (e) {
+        console.error("Failed to save favorites to localStorage:", e);
+    }
+}
+
+let favorites = loadFavorites();
+
+// **店舗データの最終構築**
+const places = initialPlaces.map(p => ({
+    ...p,
+    isFavorite: !!favorites[p.id],
+    getDisplayCategory: function() {
+        const categories = this.cat.split('、').map(c => c.trim());
+        const cat = categories.length > 0 ? categories[0] : 'その他';
+        // カテゴリ名が存在するならそれを、そうでなければ「その他」を返す
+        return categoryColor(cat) !== categoryColor('その他') ? cat : 'その他';
+    }
+}));
+
+
+// ====== 地図初期化 ======
+const map = L.map('map').setView([35.9, 140.18], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+// ====== マーカー生成 ======
+function makeDivIcon(cat){
+  const color = categoryColor(cat);
+  const emoji = (cat==="ラーメン"?"🍜":cat==="カフェ"?"☕":cat==="寿司"?"🍣":cat==="焼肉"?"🥩":cat==="中華"?"🥡":cat==="居酒屋"?"🍶":cat==="スイーツ"?"🍰":"🍽️");
+  const html = `<div class="marker-div" style="background:${color}">${emoji}</div>`;
+  return L.divIcon({ html, className:'custom-div-icon', iconSize:[34,34], iconAnchor:[17,34], popupAnchor:[0,-36] });
+}
+
+let markerObjs = [];
+
+// **お気に入り状態を切り替える**
+function toggleFavorite(id) {
+    const place = places.find(p => p.id === id);
+    if (place) {
+        place.isFavorite = !place.isFavorite;
+
+        // 永続化データを更新
+        if (place.isFavorite) {
+            favorites[id] = true;
+        } else {
+            delete favorites[id];
+        }
+        saveFavorites(favorites);
+
+        // マーカー再描画
+        const filterValue = document.getElementById('categoryFilter').value;
+        const keywordValue = document.getElementById('searchBox').value.trim();
+        renderMarkers(filterValue, keywordValue);
+    }
+}
+
+function renderMarkers(filter='all', keyword=''){
+  // 全マーカーを削除
+  markerObjs.forEach(o=>map.removeLayer(o));
+  markerObjs=[];
+  
+  places.forEach((s)=>{
+    const displayCategory = s.getDisplayCategory();
+    
+    // **フィルタリングロジック**
+    if(filter === 'favorite' && !s.isFavorite) return; // お気に入りフィルタ
+    if(filter !== 'all' && filter !== 'favorite' && displayCategory !== filter) return; // カテゴリフィルタ
+
+    if(keyword && !s.name.includes(keyword)) return; // 検索キーワードフィルタ
+
+    const icon=makeDivIcon(displayCategory);
+    
+    // **ポップアップにお気に入りボタンを追加**
+    const favButtonHTML = s.isFavorite ? 
+        `<button id="favBtn-${s.id}" style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">❤️ お気に入り解除</button>` :
+        `<button id="favBtn-${s.id}" style="background:gray;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">🤍 お気に入り追加</button>`;
+
+    const popupHTML = `
+      <div>
+        ${s.img ? `<img src="${s.img}" class="popup-img">` : ""}
+        <b>${s.name}</b> (${displayCategory})${s.isFavorite ? '<span class="star-badge" style="top:0; margin-left:8px;">⭐️ Faved</span>' : ''}<br>
+        <small>${s.info}</small><br><br>
+        ${favButtonHTML}
+      </div>
+    `;
+    const marker=L.marker([s.lat,s.lng],{icon}).addTo(map).bindPopup(popupHTML);
+    
+    // ポップアップが開いたときにお気に入りボタンのイベントリスナーを設定
+    marker.on('popupopen', function() {
+        // IDを使って特定のボタンを取得
+        const favBtn = document.getElementById(`favBtn-${s.id}`);
+        if (favBtn) {
+            favBtn.addEventListener('click', () => {
+                // 店舗IDを渡して状態を切り替える
+                toggleFavorite(s.id); 
+            });
+        }
+    });
+
+    markerObjs.push(marker);
+  });
+}
+
+// ====== 現在地ボタン ======
+document.getElementById('locateBtn').addEventListener('click',()=>{
+  if(!navigator.geolocation){alert("位置情報が使えません");return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude,longitude}=pos.coords;
+    map.setView([latitude,longitude],15);
+    L.marker([latitude,longitude]).addTo(map).bindPopup("📍 現在地").openPopup();
+  },()=>alert("位置情報を取得できませんでした"));
+});
+
+// ====== イベント ======
+const categoryFilter = document.getElementById('categoryFilter');
+const searchBox = document.getElementById('searchBox');
+
+searchBox.addEventListener('input',e=>{
+  renderMarkers(categoryFilter.value, e.target.value.trim());
+});
+categoryFilter.addEventListener('change',e=>{
+  renderMarkers(e.target.value, searchBox.value.trim());
+});
+
+// ====== 初期描画 ======
+renderMarkers();
+</script>
+</body>
+</html>
