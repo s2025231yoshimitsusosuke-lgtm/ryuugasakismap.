@@ -1,3 +1,4 @@
+<!-- 修正版 HTML 全体をここに貼り直します -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -113,7 +114,8 @@ button#locateBtn:active {
   <div class="controls" style="margin-top:6px; width:100%;">
     <select id="categoryFilter">
       <option value="all">すべて</option>
-      <option value="favorite">⭐️ お気に入り</option> <option value="ラーメン">ラーメン</option>
+      <option value="favorite">⭐️ お気に入り</option> 
+      <option value="ラーメン">ラーメン</option>
       <option value="カフェ">カフェ</option>
       <option value="寿司">寿司</option>
       <option value="焼肉">焼肉</option>
@@ -139,11 +141,11 @@ function categoryColor(cat){
     case "中華": return "#f4a261";
     case "居酒屋": return "#6f42c1";
     case "スイーツ": return "#e76f51";
-    default: return "#4a5568"; // その他
+    default: return "#4a5568";
   }
 }
 
-// ====== 店舗データ (idを永続化キーとして追加) ======
+// ====== 店舗データ 修正版 ======
 const initialPlaces = [
   { id: 2, name: "山水閣", cat: "ウナギ、しゃぶしゃぶ", lat: 35.949219, lng: 140.1366538, img: "https://b081800.gorp.jp/", info: "予約可、11:00 - 14:00　17:00 - 20:00" },
   { id: 3, name: "タイガーパンチ", cat: "そば", lat: 35.9129595, lng: 140.1904063, img: "https://x.com/tigerpunch_2024", info: "火曜定休日、カード・電子マネー・QRコード不可" },
@@ -152,185 +154,122 @@ const initialPlaces = [
   { id: 6, name: "手打ちそば薬師寺", cat: "そば", lat: 35.9075281, lng: 140.1812618, img: "", info: "定休日：日曜日、現金のみ、予約不可" },
   { id: 7, name: "清六屋", cat: "ラーメン", lat: 35.9116106, lng: 140.1823263, img: "https://www.seirock-ya.jp/", info: "11:00~23:30、予約不可" },
   { id: 8, name: "はま寿司", cat: "その他", lat: 35.9110378, lng: 140.180523, img: "https://www.hama-sushi.co.jp/", info: "月～金 11:00～24:00　土日祝 10:00～24:00、予約可" },
-  { id: 9, name: "麺や　こもん", cat: "ラーメン", lat: 35.9116106, lng: 140.1823263, img: "https://ameblo.jp/komon0928", info: "11:00~14:00  17:00~20:30、予約不可" 
-  { 
-    id: 1, 
-    name: "桑名屋 (くわなや)", 
-    cat: "うなぎ", 
-    lat: 35.935194, 
-    lng: 140.134188, 
-    img: "https://tabelog.com/ibaraki/A0803/A080302/8002290/", 
-    info: "予約不可、11:00 - 13:30 / 17:00 - 19:30、定休日: 木曜・第1第3水曜" 
-  },
-  { 
-    id: 2, 
-    name: "山水閣", 
-    cat: "うなぎ、しゃぶしゃぶ", 
-    lat: 35.928372, 
-    lng: 140.138444, 
-    img: "https://b081800.gorp.jp/", 
-    info: "予約可、11:00 - 14:00 / 17:00 - 20:00、定休日: 月曜" 
-  },
-  { 
-    id: 3, 
-    name: "鶴舞家 (つるまいや)", 
-    cat: "うなぎ、川魚料理", 
-    lat: 35.927330, 
-    lng: 140.138500, 
-    img: "https://www.unagi-turumaiya.com/", 
-    info: "予約可、11:00 - 15:00 / 17:00 - 19:00、定休日: 水曜" 
-  },
-  { 
-    id: 4, 
-    name: "うなぎ川魚料理 伊勢屋", 
-    cat: "うなぎ、天ぷら", 
-    lat: 35.935673, 
-    lng: 140.132880, 
-    img: "https://tabelog.com/ibaraki/A0803/A080302/8000462/", 
-    info: "予約可、11:00 - 15:00 / 17:00 - 20:00、定休日: 火曜" 
-  }
+  { id: 9, name: "麺や　こもん", cat: "ラーメン", lat: 35.9116106, lng: 140.1823263, img: "https://ameblo.jp/komon0928", info: "11:00~14:00  17:00~20:30、予約不可" },
+
+  { id: 101, name: "桑名屋 (くわなや)", cat: "うなぎ", lat: 35.935194, lng: 140.134188, img: "https://tabelog.com/ibaraki/A0803/A080302/8002290/", info: "予約不可、11:00 - 13:30 / 17:00 - 19:30、定休日: 木曜・第1第3水曜" },
+  { id: 102, name: "山水閣", cat: "うなぎ、しゃぶしゃぶ", lat: 35.928372, lng: 140.138444, img: "https://b081800.gorp.jp/", info: "予約可、11:00 - 14:00 / 17:00 - 20:00、定休日: 月曜" },
+  { id: 103, name: "鶴舞家 (つるまいや)", cat: "うなぎ、川魚料理", lat: 35.927330, lng: 140.138500, img: "https://www.unagi-turumaiya.com/", info: "予約可、11:00 - 15:00 / 17:00 - 19:00、定休日: 水曜" },
+  { id: 104, name: "うなぎ川魚料理 伊勢屋", cat: "うなぎ、天ぷら", lat: 35.935673, lng: 140.132880, img: "https://tabelog.com/ibaraki/A0803/A080302/8000462/", info: "予約可、11:00 - 15:00 / 17:00 - 20:00、定休日: 火曜" }
 ];
 
-// **お気に入り状態の永続化ロジック**
+// ====== お気に入り 永続化 ======
 const FAVORITES_STORAGE_KEY = 'ryugasaki_favorites';
-
 function loadFavorites() {
-    try {
-        const favs = localStorage.getItem(FAVORITES_STORAGE_KEY);
-        return favs ? JSON.parse(favs) : {};
-    } catch (e) {
-        console.error("Failed to load favorites from localStorage:", e);
-        return {};
-    }
+  try {
+    const favs = localStorage.getItem(FAVORITES_STORAGE_KEY);
+    return favs ? JSON.parse(favs) : {};
+  } catch (e) {
+    return {};
+  }
 }
-
 function saveFavorites(favs) {
-    try {
-        localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favs));
-    } catch (e) {
-        console.error("Failed to save favorites to localStorage:", e);
-    }
+  try {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favs));
+  } catch (e) {}
 }
-
 let favorites = loadFavorites();
 
-// **店舗データの最終構築**
-const places = initialPlaces.map(p => ({
-    ...p,
-    isFavorite: !!favorites[p.id],
-    getDisplayCategory: function() {
-        const categories = this.cat.split('、').map(c => c.trim());
-        const cat = categories.length > 0 ? categories[0] : 'その他';
-        // カテゴリ名が存在するならそれを、そうでなければ「その他」を返す
-        return categoryColor(cat) !== categoryColor('その他') ? cat : 'その他';
-    }
+// ====== 店舗データ最終整形 ======
+const places = initialPlaces.map(p=>({
+  ...p,
+  isFavorite: !!favorites[p.id],
+  getDisplayCategory(){
+    const cats = this.cat.split('、');
+    const first = cats[0].trim();
+    return categoryColor(first) !== categoryColor('その他') ? first : 'その他';
+  }
 }));
 
-
-// ====== 地図初期化 ======
+// ====== 地図生成 ======
 const map = L.map('map').setView([35.9, 140.18], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
 
-// ====== マーカー生成 ======
 function makeDivIcon(cat){
   const color = categoryColor(cat);
   const emoji = (cat==="ラーメン"?"🍜":cat==="カフェ"?"☕":cat==="寿司"?"🍣":cat==="焼肉"?"🥩":cat==="中華"?"🥡":cat==="居酒屋"?"🍶":cat==="スイーツ"?"🍰":"🍽️");
-  const html = `<div class="marker-div" style="background:${color}">${emoji}</div>`;
-  return L.divIcon({ html, className:'custom-div-icon', iconSize:[34,34], iconAnchor:[17,34], popupAnchor:[0,-36] });
+  return L.divIcon({
+    html:`<div class="marker-div" style="background:${color}">${emoji}</div>`,
+    className:'custom-div-icon', iconSize:[34,34], iconAnchor:[17,34], popupAnchor:[0,-36]
+  });
 }
 
-let markerObjs = [];
+let markerObjs=[];
 
-// **お気に入り状態を切り替える**
-function toggleFavorite(id) {
-    const place = places.find(p => p.id === id);
-    if (place) {
-        place.isFavorite = !place.isFavorite;
-
-        // 永続化データを更新
-        if (place.isFavorite) {
-            favorites[id] = true;
-        } else {
-            delete favorites[id];
-        }
-        saveFavorites(favorites);
-
-        // マーカー再描画
-        const filterValue = document.getElementById('categoryFilter').value;
-        const keywordValue = document.getElementById('searchBox').value.trim();
-        renderMarkers(filterValue, keywordValue);
-    }
+// ====== お気に入り切替 ======
+function toggleFavorite(id){
+  const p = places.find(x=>x.id===id);
+  if(!p) return;
+  p.isFavorite = !p.isFavorite;
+  if(p.isFavorite) favorites[id]=true;
+  else delete favorites[id];
+  saveFavorites(favorites);
+  renderMarkers(categoryFilter.value, searchBox.value.trim());
 }
 
+// ====== マーカー描画 ======
 function renderMarkers(filter='all', keyword=''){
-  // 全マーカーを削除
-  markerObjs.forEach(o=>map.removeLayer(o));
+  markerObjs.forEach(m=>map.removeLayer(m));
   markerObjs=[];
-  
-  places.forEach((s)=>{
-    const displayCategory = s.getDisplayCategory();
-    
-    // **フィルタリングロジック**
-    if(filter === 'favorite' && !s.isFavorite) return; // お気に入りフィルタ
-    if(filter !== 'all' && filter !== 'favorite' && displayCategory !== filter) return; // カテゴリフィルタ
 
-    if(keyword && !s.name.includes(keyword)) return; // 検索キーワードフィルタ
+  places.forEach(s=>{
+    const cat = s.getDisplayCategory();
 
-    const icon=makeDivIcon(displayCategory);
-    
-    // **ポップアップにお気に入りボタンを追加**
-    const favButtonHTML = s.isFavorite ? 
-        `<button id="favBtn-${s.id}" style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">❤️ お気に入り解除</button>` :
-        `<button id="favBtn-${s.id}" style="background:gray;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">🤍 お気に入り追加</button>`;
+    if(filter==='favorite' && !s.isFavorite) return;
+    if(filter!=='all' && filter!=='favorite' && cat!==filter) return;
+    if(keyword && !s.name.includes(keyword)) return;
 
-    const popupHTML = `
+    const marker = L.marker([s.lat, s.lng],{icon:makeDivIcon(cat)});
+
+    const favBtn = s.isFavorite
+      ? `<button id="favBtn-${s.id}" style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">❤️ お気に入り解除</button>`
+      : `<button id="favBtn-${s.id}" style="background:gray;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">🤍 お気に入り追加</button>`;
+
+    marker.bindPopup(`
       <div>
-        ${s.img ? `<img src="${s.img}" class="popup-img">` : ""}
-        <b>${s.name}</b> (${displayCategory})${s.isFavorite ? '<span class="star-badge" style="top:0; margin-left:8px;">⭐️ Faved</span>' : ''}<br>
+        ${s.img?`<img src="${s.img}" class="popup-img">`:''}
+        <b>${s.name}</b> (${cat}) ${s.isFavorite?'<span class="star-badge">⭐️ Faved</span>':''}<br>
         <small>${s.info}</small><br><br>
-        ${favButtonHTML}
+        ${favBtn}
       </div>
-    `;
-    const marker=L.marker([s.lat,s.lng],{icon}).addTo(map).bindPopup(popupHTML);
-    
-    // ポップアップが開いたときにお気に入りボタンのイベントリスナーを設定
-    marker.on('popupopen', function() {
-        // IDを使って特定のボタンを取得
-        const favBtn = document.getElementById(`favBtn-${s.id}`);
-        if (favBtn) {
-            favBtn.addEventListener('click', () => {
-                // 店舗IDを渡して状態を切り替える
-                toggleFavorite(s.id); 
-            });
-        }
+    `);
+
+    marker.on('popupopen',()=>{
+      const btn=document.getElementById(`favBtn-${s.id}`);
+      if(btn) btn.onclick=()=> toggleFavorite(s.id);
     });
 
+    marker.addTo(map);
     markerObjs.push(marker);
   });
 }
 
-// ====== 現在地ボタン ======
-document.getElementById('locateBtn').addEventListener('click',()=>{
-  if(!navigator.geolocation){alert("位置情報が使えません");return;}
+// ====== 現在地 ======
+document.getElementById('locateBtn').onclick=()=>{
+  if(!navigator.geolocation) return alert("位置情報が使えません");
   navigator.geolocation.getCurrentPosition(pos=>{
     const {latitude,longitude}=pos.coords;
     map.setView([latitude,longitude],15);
     L.marker([latitude,longitude]).addTo(map).bindPopup("📍 現在地").openPopup();
   },()=>alert("位置情報を取得できませんでした"));
-});
+};
 
-// ====== イベント ======
-const categoryFilter = document.getElementById('categoryFilter');
-const searchBox = document.getElementById('searchBox');
+// ====== フィルター ======
+const categoryFilter=document.getElementById('categoryFilter');
+const searchBox=document.getElementById('searchBox');
 
-searchBox.addEventListener('input',e=>{
-  renderMarkers(categoryFilter.value, e.target.value.trim());
-});
-categoryFilter.addEventListener('change',e=>{
-  renderMarkers(e.target.value, searchBox.value.trim());
-});
+categoryFilter.onchange=()=>renderMarkers(categoryFilter.value, searchBox.value.trim());
+searchBox.oninput=e=>renderMarkers(categoryFilter.value, e.target.value.trim());
 
-// ====== 初期描画 ======
 renderMarkers();
 </script>
 </body>
